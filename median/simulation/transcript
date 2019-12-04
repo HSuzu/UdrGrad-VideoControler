@@ -1,0 +1,52 @@
+# //  Questa Sim-64
+# //  Version 2019.3 linux_x86_64 Jul 24 2019
+# //
+# //  Copyright 1991-2019 Mentor Graphics Corporation
+# //  All Rights Reserved.
+# //
+# //  QuestaSim and its associated documentation contain trade
+# //  secrets and commercial or financial information that are the property of
+# //  Mentor Graphics Corporation and are privileged, confidential,
+# //  and exempt from disclosure under the Freedom of Information Act,
+# //  5 U.S.C. Section 552. Furthermore, this information
+# //  is prohibited from disclosure under the Trade Secrets Act,
+# //  18 U.S.C. Section 1905.
+# //
+# vsim MCE_tb 
+# Start time: 10:16:36 on Dec 04,2019
+# ** Note: (vsim-8009) Loading existing optimized design _opt
+# Loading sv_std.std
+# Loading work.MCE_tb(fast)
+# Loading work.MCE(fast)
+vlog +acc -L mtiAvm -L mtiRnm -L mtiOvm -L mtiUvm -L mtiUPF -L infact /cal/homes/suzukawa/Documents/SE/SE204/henry-suzukawa/median/src/MCE.sv
+# QuestaSim-64 vlog 2019.3 Compiler 2019.07 Jul 24 2019
+# Start time: 10:17:17 on Dec 04,2019
+# vlog -reportprogress 300 "+acc" -L mtiAvm -L mtiRnm -L mtiOvm -L mtiUvm -L mtiUPF -L infact /cal/homes/suzukawa/Documents/SE/SE204/henry-suzukawa/median/src/MCE.sv 
+# -- Compiling module MCE
+# 
+# Top level modules:
+# 	MCE
+# End time: 10:17:17 on Dec 04,2019, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+add wave -position insertpoint  \
+{sim:/MCE_tb/I_MCE/A[5]}
+add wave -position insertpoint  \
+sim:/MCE_tb/I_MCE/A
+run -all
+# Fin de la simulation sans aucune erreur
+# ** Note: $finish    : ../src/mce-tb.sv(50)
+#    Time: 1 us  Iteration: 0  Instance: /MCE_tb
+# 1
+# Break in NamedBeginStat ENTREES at ../src/mce-tb.sv line 50
+add wave -position insertpoint  \
+sim:/MCE_tb/A
+add wave -position insertpoint  \
+sim:/MCE_tb/A
+add wave -position insertpoint  \
+sim:/MCE_tb/A
+add wave -position insertpoint  \
+sim:/MCE_tb/B
+add wave -position insertpoint  \
+{sim:/MCE_tb/A[7]}
+# End time: 10:20:54 on Dec 04,2019, Elapsed time: 0:04:18
+# Errors: 8, Warnings: 0
