@@ -14,27 +14,36 @@ T_opt
 VRY[0R1?6odz2C6?Ca8Ng13
 04 6 4 work MCE_tb fast 0
 =1-000ae431a4f1-5de778b6-8ab3e-567d
-o-quiet -auto_acc_if_foreign -work work
-tCvgOpt 0 Stats "none"
+Z1 o-quiet -auto_acc_if_foreign -work work
+Z2 tCvgOpt 0 Stats "none"
 n@_opt
-OL;O;2019.3;69
+Z3 OL;O;2019.3;69
 R0
+T_opt1
+!s110 1575454894
+VQJzV=09i5mg8F?0z2:31d1
+04 6 4 work MED_tb fast 0
+=1-000ae431a4f1-5de788ae-ac075-6331
+R1
+R2
+n@_opt1
+R3
 vMCE
-Z1 DXx6 sv_std 3 std 0 22 9oUSJO;AeEaW`l:M@^WG92
+Z4 DXx6 sv_std 3 std 0 22 9oUSJO;AeEaW`l:M@^WG92
 !s110 1575451037
 !i10b 1
 !s100 I]@Bb4KK2HgiM4RT=0zD?1
 !s11b UiWGNcMb`zhAF7k6MkPc>1
 I1J6=?7RfGUH?CW6VoVLPT3
-Z2 VDg1SIo80bB@j0V0VzS_@n1
+Z5 VDg1SIo80bB@j0V0VzS_@n1
 S1
-Z3 d/cal/homes/suzukawa/Documents/SE/SE204/henry-suzukawa/median/simulation
+Z6 d/cal/homes/suzukawa/Documents/SE/SE204/henry-suzukawa/median/simulation
 w1575301648
 8/cal/homes/suzukawa/Documents/SE/SE204/henry-suzukawa/median/src/MCE.sv
 F/cal/homes/suzukawa/Documents/SE/SE204/henry-suzukawa/median/src/MCE.sv
 !i122 -1
 L0 1
-Z4 OL;L;2019.3;69
+Z7 OL;L;2019.3;69
 r1
 !s85 0
 31
@@ -42,25 +51,25 @@ r1
 !s107 /cal/homes/suzukawa/Documents/SE/SE204/henry-suzukawa/median/src/MCE.sv|
 !s90 -reportprogress|300|+acc|-L|mtiAvm|-L|mtiRnm|-L|mtiOvm|-L|mtiUvm|-L|mtiUPF|-L|infact|/cal/homes/suzukawa/Documents/SE/SE204/henry-suzukawa/median/src/MCE.sv|
 !i113 0
-Z5 o+acc -L mtiAvm -L mtiRnm -L mtiOvm -L mtiUvm -L mtiUPF -L infact
-Z6 tCvgOpt 0
+Z8 o+acc -L mtiAvm -L mtiRnm -L mtiOvm -L mtiUvm -L mtiUPF -L infact
+Z9 tCvgOpt 0
 n@m@c@e
 vMCE_tb
-R1
+R4
 !s110 1575450904
 !i10b 1
 !s100 [X>BXC8A6<zWW3[?35dS22
 !s11b ieVU`ZlB42FYa]Ik=bQ^93
 I@f:Z=R_YOaF[12E0c_@^Z3
-R2
+R5
 S1
-R3
+R6
 w1575391474
 8../src/mce-tb.sv
 F../src/mce-tb.sv
 !i122 -1
 L0 1
-R4
+R7
 r1
 !s85 0
 31
@@ -68,6 +77,58 @@ r1
 !s107 ../src/mce-tb.sv|
 !s90 +acc|../src/mce-tb.sv|
 !i113 0
-R5
-R6
+R8
+R9
 n@m@c@e_tb
+vMED
+R4
+!s110 1575454889
+!i10b 1
+!s100 Y<fao3e]l8z_hoR53ehNV3
+!s11b @S[Saz>d?0K3[AOkf[RBX2
+I^997AKTRffT=X1EQHP4`10
+R5
+S1
+R6
+w1575454877
+8../src/med.sv
+F../src/med.sv
+!i122 -1
+L0 1
+R7
+r1
+!s85 0
+31
+!s108 1575454889.000000
+!s107 ../src/med.sv|
+!s90 +acc|../src/med.sv|
+!i113 0
+R8
+R9
+n@m@e@d
+vMED_tb
+R4
+!s110 1575454746
+!i10b 1
+!s100 ViN?a3`CInYIiZAjmB6AS0
+!s11b _nZ7oMA1DBH]obeS;ddij3
+IVeQ`=_m>EJOjT1[^OPBPl2
+R5
+S1
+R6
+w1575454502
+8../src/med-tb.sv
+F../src/med-tb.sv
+!i122 -1
+L0 1
+R7
+r1
+!s85 0
+31
+!s108 1575454746.000000
+!s107 ../src/med-tb.sv|
+!s90 +acc|../src/med-tb.sv|
+!i113 0
+R8
+R9
+n@m@e@d_tb
