@@ -10,7 +10,6 @@ logic [NBITS-1:0] R [NPIXELS-1:0];
 
 assign A = R[NPIXELS-1];
 assign B = R[NPIXELS-2];
-assign DO = R[NPIXELS-1];
 
 MCE I_MCE(.A(A), .B(B), .MAX(MAX), .MIN(MIN));
 
@@ -30,5 +29,6 @@ begin
         R[NPIXELS-1] <= MAX;
 end
 
-endmodule
+assign DO = R[NPIXELS-1];
 
+endmodule
