@@ -6,29 +6,29 @@ module MED #(parameter NBITS = 8, NPIXELS = 9)
              output [NBITS-1:0] DO);
 
 wire [NBITS-1:0] A, B, MIN, MAX;
-logic [NBITS-1:0] R [NPIXELS-1:0];
 
-assign A = R[NPIXELS-1];
-assign B = R[NPIXELS-2];
+genvar i;
+generate
+	for(i = 0; i <= NPIXELS-1; i++)
+	begin: ff
+		wire [NBITS-1:0] D, Q;
+		wire RST = 1'b0;
+		FF #(.NBITS(NBITS)) R(.CLK(CLK), .RST(RST), .D(D), .Q(Q));
+	end
+endgenerate
 
-MCE I_MCE(.A(A), .B(B), .MAX(MAX), .MIN(MIN));
-
-always_ff @(posedge CLK)
+for(i = 0; i <= NPIXELS-3; i++)
 begin
-    if(DSI)
-        R[0] <= DI;
-    else
-        R[0] <= MIN;
-
-    if(NPIXELS >= 3)
-        R[NPIXELS-2:1] <= R[NPIXELS-3:0];
-
-    if(BYP)
-        R[NPIXELS-1] <= R[NPIXELS-2];
-    else
-        R[NPIXELS-1] <= MAX;
+	assign ff[i+1].D = ff[i].Q;
 end
 
-assign DO = R[NPIXELS-1];
+assign ff[0].D = (DSI)? DI : MIN;
+assign ff[NPIXELS-1].D = (BYP)? ff[NPIXELS-2].Q : MAX;
+
+assign A = ff[NPIXELS-1].Q;
+assign B = ff[NPIXELS-2].Q;
+assign DO = ff[NPIXELS-1].Q;
+
+MCE #(.NBITS(NBITS)) I_MCE(.A(A), .B(B), .MAX(MAX), .MIN(MIN));
 
 endmodule
