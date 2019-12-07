@@ -29,7 +29,7 @@ module MEDIAN_tb;
     nRST = 1'b0;
     @(negedge CLK);
     nRST = 1'b1;
-    repeat(1000) begin
+    repeat(1) begin
       @(negedge CLK);
       DSI = 1'b1;
       for(j = 0; j < 9; j = j + 1) begin
