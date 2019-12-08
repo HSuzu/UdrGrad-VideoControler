@@ -10,7 +10,7 @@ SRC_DIR = $(SYN_DIR)/../src
 # source files for synthesis
 # add the path to source files ex:MCE.sv 
 # separated with spaces	
-SOURCE_FILES =  MCE.sv med.sv FF.sv MEDIAN.sv
+SOURCE_FILES =  MCE.sv MED.sv FF.sv MEDIAN.sv
 
 # Top module for synthesis
 # add the top modle for synthesis ex:MCE

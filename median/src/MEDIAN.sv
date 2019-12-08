@@ -13,10 +13,12 @@ logic BYP;
 MED #(.NBITS(NBITS), .NPIXELS(NPIXELS)) I_MED (.DI(DI), .DSI(DSI), .BYP(BYP), .CLK(CLK), .DO(DO));
 
 /* There are 6 states:
-INIT: set all variables to the default value change immediately le state to LOADPX.
+INIT: set all variables to the default value and change immediately the state to LOADPX.
 LOADPX: load NPIXELS into I_MED, when the counter (a.k.a. px) reaches NPIXELS, the state changes to BBL_INIT.
-BBL_INIT: initalises all variables of this section ans immediatly change the state to BBL_RISE.
-BBL_RISE: calculates the maximum of the variables inside I_MED until  */
+BBL_INIT: initalises all variables of this section and immediately change the state to BBL_RISE.
+BBL_RISE: calculates the maximum of the variables inside I_MED until reaches an "invalid" passing to BBL_TOP
+BBL_TOP: sets BYP to 1 to ignore the current maximum and the "invalids" values. After this state, the machine recomences or writes the output (WB).
+WO: Set the DSO bit active and clean the environment */
 enum {INIT, LOAD, BBL_INIT, BBL_RISE, BBL_TOP, WB} state;
 
 logic [NPXBITS-1:0] px, nz;
