@@ -11,10 +11,15 @@ module wb_bram #(parameter mem_adr_width = 11) (
       );
       // a vous de jouer a partir d'ici
 
+      `define classic_addr (wb_s.cti == 3'b000)
+      `define const_addr (wb_s.cti == 3'b001)
+      `define incr_addr (wb_s.cti == 3'b010)
+
       // ----------------------- MEMORY ---------------------------
       logic [3:0][7:0] mem [2**(mem_adr_width)-1:0];
+      logic mem_incr;
       wire [mem_adr_width-1:0] mem_addr;
-      assign mem_addr = wb_s.adr[mem_adr_width+1:2];
+      assign mem_addr = wb_s.adr[mem_adr_width+1:2] + mem_incr;
 
       // ------------------------ ACK SIGNAL ----------------------
       logic ack_w, ack_r;
@@ -27,9 +32,8 @@ module wb_bram #(parameter mem_adr_width = 11) (
 
       // ------------------------ RST et ACK ----------------------
       always_ff @(posedge wb_s.clk) begin
-            if(wb_s.rst | ack_r) begin
+            if(wb_s.rst || (ack_r && !`const_addr && !`incr_addr))
                   ack_r <= 0;
-            end
             else if (wb_s.stb & !wb_s.we)
                   ack_r <= 1;
       end
@@ -44,5 +48,12 @@ module wb_bram #(parameter mem_adr_width = 11) (
             end
             wb_s.dat_sm <= mem[mem_addr];
       end
+
+      always_ff @(posedge wb_s.clk) begin
+            mem_incr <= 0;
+            if(`incr_addr && !wb_s.we)
+                  mem_incr <= 1;
+      end
+
 
       endmodule
