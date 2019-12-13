@@ -11,7 +11,6 @@ module wb_bram #(parameter mem_adr_width = 11) (
       );
       // a vous de jouer a partir d'ici
 
-      `define classic_addr (wb_s.cti == 3'b000)
       `define const_addr (wb_s.cti == 3'b001)
       `define incr_addr (wb_s.cti == 3'b010)
 
@@ -24,7 +23,7 @@ module wb_bram #(parameter mem_adr_width = 11) (
       // ------------------------ ACK SIGNAL ----------------------
       logic ack_w, ack_r;
       assign wb_s.ack = (ack_w || ack_r);
-      assign ack_w = (wb_s.cyc & wb_s.stb & wb_s.we);
+      assign ack_w = (wb_s.stb & wb_s.we);
 
       // Pour cette partie, on ne utilise pas les signaux rty et err
       assign wb_s.rty = 0;
@@ -40,20 +39,18 @@ module wb_bram #(parameter mem_adr_width = 11) (
 
       // ------------------------ READ et WRITE -------------------
       always_ff @(posedge wb_s.clk) begin
+            mem_incr <= 0;
+            if(`incr_addr && !wb_s.we)
+                  mem_incr <= 1;
+
             if(ack_w) begin
                   if(wb_s.sel[0]) mem[mem_addr][0] <= wb_s.dat_ms[7:0];
                   if(wb_s.sel[1]) mem[mem_addr][1] <= wb_s.dat_ms[15:8];
                   if(wb_s.sel[2]) mem[mem_addr][2] <= wb_s.dat_ms[23:16];
                   if(wb_s.sel[3]) mem[mem_addr][3] <= wb_s.dat_ms[31:24];
             end
+
             wb_s.dat_sm <= mem[mem_addr];
       end
-
-      always_ff @(posedge wb_s.clk) begin
-            mem_incr <= 0;
-            if(`incr_addr && !wb_s.we)
-                  mem_incr <= 1;
-      end
-
 
       endmodule
