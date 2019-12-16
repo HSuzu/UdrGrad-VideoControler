@@ -74,6 +74,27 @@ assign wshb_if_sdram.bte = '0 ;
 //------- Code Eleves ------
 //--------------------------
 
+`ifdef SIMULATION
+    localparam led1cmpt = 99;
+`else
+    localparam led1cmpt = 999999;
+`endif
 
+assign LED[0] = KEY[0];
 
+logic [$clog2(led1cmpt)-1:0] led1_cnt;
+always_ff @(posedge sys_clk) begin
+    if(sys_rst) begin
+        led1_cnt <= 0;
+        LED[1] <= 0;
+    end
+    else
+    begin 
+        if(led1_cnt == led1cmpt) begin
+            led1_cnt <= 0;
+            LED[1] <= ~LED[1];
+        end
+        else led1_cnt <= led1_cnt + 1;
+    end
+end    
 endmodule

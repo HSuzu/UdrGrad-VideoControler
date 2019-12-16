@@ -20,7 +20,18 @@ Top Top0(.*) ;
 //  Code élèves
 //////////////////////////////
 
+// Horloge 50MHz
+always #10ns FPGA_CLK1_50 = ~FPGA_CLK1_50;
 
+initial begin
+    KEY[0] = 1;
+    #128ns KEY[0] = 0;
+    #128ns KEY[0] = 1;
+end
 
+always begin
+    #4ms;
+    $stop();
+end
 
 endmodule
