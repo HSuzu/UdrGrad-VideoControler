@@ -77,13 +77,14 @@ assign wshb_if_sdram.bte = '0 ;
 
 `ifdef SIMULATION
     localparam led1cmpt = 99;
-		localparam led2cmpt = 31;
+	localparam led2cmpt = 31;
 `else
     localparam led1cmpt = 999999;
-		localparam led2cmpt = 31999;
+	localparam led2cmpt = 31999;
 `endif
 
 assign LED[0] = KEY[0];
+assign LED[7:3] = 5'b0;
 
 //=============================
 // Declaration du schéma de reset
@@ -106,7 +107,8 @@ end
 //  LED clignote - sys_clk
 //===================================
 
-logic [$clog2(led1cmpt)-1:0] led1_cnt;
+localparam cnt1_size = $clog2(led1cmpt)-1;
+logic [cnt1_size:0] led1_cnt;
 always_ff @(posedge sys_clk) begin
     if(sys_rst) begin
         led1_cnt <= 0;
@@ -118,7 +120,7 @@ always_ff @(posedge sys_clk) begin
             led1_cnt <= 0;
             LED[1] <= ~LED[1];
         end
-        else led1_cnt <= led1_cnt + 1;
+        else led1_cnt <= led1_cnt + 1'b1;
     end
 end
 
@@ -126,7 +128,8 @@ end
 //  LED clignote - pixel_clk
 //===================================
 
-logic [$clog2(led2cmpt)-1:0] led2_cnt;
+localparam cnt2_size = $clog2(led2cmpt)-1;
+logic [cnt2_size:0] led2_cnt;
 always_ff @(posedge pixel_clk) begin
     if(pixel_rst) begin
         led2_cnt <= 0;
@@ -138,7 +141,7 @@ always_ff @(posedge pixel_clk) begin
             led2_cnt <= 0;
             LED[2] <= ~LED[2];
         end
-        else led2_cnt <= led2_cnt + 1;
+        else led2_cnt <= led2_cnt + 1'b1;
     end
 end
 
