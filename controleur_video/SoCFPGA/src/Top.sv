@@ -106,7 +106,7 @@ end
 //  LED clignote - sys_clk
 //===================================
 
-logic [$clog2(led1cmpt)-1:0] led1_cnt;
+logic [$clog2(led1cmpt):0] led1_cnt;
 always_ff @(posedge sys_clk) begin
     if(sys_rst) begin
         led1_cnt <= 0;
@@ -126,7 +126,7 @@ end
 //  LED clignote - pixel_clk
 //===================================
 
-logic [$clog2(led2cmpt)-1:0] led2_cnt;
+logic [$clog2(led2cmpt):0] led2_cnt;
 always_ff @(posedge pixel_clk) begin
     if(pixel_rst) begin
         led2_cnt <= 0;
