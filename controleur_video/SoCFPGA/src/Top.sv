@@ -16,6 +16,7 @@ module Top (
   wire        sys_rst;   // Le signal de reset du système
   wire        sys_clk;   // L'horloge système a 100Mhz
   wire        pixel_clk; // L'horloge de la video 32 Mhz
+  logic       pixel_rst; // Le signal de reset du video
 
 //=======================================================
 //  La PLL pour la génération des horloges
@@ -76,11 +77,34 @@ assign wshb_if_sdram.bte = '0 ;
 
 `ifdef SIMULATION
     localparam led1cmpt = 99;
+		localparam led2cmpt = 31;
 `else
     localparam led1cmpt = 999999;
+		localparam led2cmpt = 31999;
 `endif
 
 assign LED[0] = KEY[0];
+
+//=============================
+// Declaration du schéma de reset
+//=============================
+
+logic pixel_rst_int; // Intermédiaire valeur du signal pixel_rst
+
+always_ff @(posedge pixel_clk or posedge sys_rst) begin
+		if(sys_rst) begin
+				pixel_rst <= 1;
+				pixel_rst_int <= 1;
+		end
+		else begin
+				pixel_rst_int <= 0;
+				pixel_rst <= pixel_rst_int;
+		end
+end
+
+//===================================
+//  LED clignote - sys_clk
+//===================================
 
 logic [$clog2(led1cmpt)-1:0] led1_cnt;
 always_ff @(posedge sys_clk) begin
@@ -89,12 +113,33 @@ always_ff @(posedge sys_clk) begin
         LED[1] <= 0;
     end
     else
-    begin 
+    begin
         if(led1_cnt == led1cmpt) begin
             led1_cnt <= 0;
             LED[1] <= ~LED[1];
         end
         else led1_cnt <= led1_cnt + 1;
     end
-end    
+end
+
+//===================================
+//  LED clignote - pixel_clk
+//===================================
+
+logic [$clog2(led2cmpt)-1:0] led2_cnt;
+always_ff @(posedge pixel_clk) begin
+    if(pixel_rst) begin
+        led2_cnt <= 0;
+        LED[2] <= 0;
+    end
+    else
+    begin
+        if(led2_cnt == led2cmpt) begin
+            led2_cnt <= 0;
+            LED[2] <= ~LED[2];
+        end
+        else led2_cnt <= led2_cnt + 1;
+    end
+end
+
 endmodule
