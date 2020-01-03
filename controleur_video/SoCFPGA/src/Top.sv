@@ -79,8 +79,8 @@ assign wshb_if_sdram.bte = '0 ;
     localparam led1cmpt = 99;
 	localparam led2cmpt = 31;
 `else
-    localparam led1cmpt = 999999;
-	localparam led2cmpt = 31999;
+    localparam led1cmpt = 50000000;
+	localparam led2cmpt = 16000000;
 `endif
 
 assign LED[0] = KEY[0];
@@ -110,17 +110,16 @@ end
 localparam cnt1_size = $clog2(led1cmpt)-1;
 logic [cnt1_size:0] led1_cnt;
 always_ff @(posedge sys_clk) begin
+    led1_cnt <= led1_cnt + 1'b1;
+
     if(sys_rst) begin
-        led1_cnt <= 0;
+        led1_cnt <= 1;
         LED[1] <= 0;
     end
-    else
-    begin
-        if(led1_cnt == led1cmpt) begin
-            led1_cnt <= 0;
-            LED[1] <= ~LED[1];
-        end
-        else led1_cnt <= led1_cnt + 1'b1;
+
+    if(led1_cnt == led1cmpt) begin
+        led1_cnt <= 1;
+        LED[1] <= ~LED[1];
     end
 end
 
@@ -131,17 +130,16 @@ end
 localparam cnt2_size = $clog2(led2cmpt)-1;
 logic [cnt2_size:0] led2_cnt;
 always_ff @(posedge pixel_clk) begin
+    led2_cnt <= led2_cnt + 1'b1;
+
     if(pixel_rst) begin
-        led2_cnt <= 0;
+        led2_cnt <= 1;
         LED[2] <= 0;
     end
-    else
-    begin
-        if(led2_cnt == led2cmpt) begin
-            led2_cnt <= 0;
-            LED[2] <= ~LED[2];
-        end
-        else led2_cnt <= led2_cnt + 1'b1;
+
+    if(led2_cnt == led2cmpt) begin
+        led2_cnt <= 1;
+        LED[2] <= ~LED[2];
     end
 end
 
