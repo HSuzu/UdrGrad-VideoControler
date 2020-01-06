@@ -13,12 +13,17 @@ logic [3:0]	SW;
 // Interface vers le support matériel
 hws_if      hws_ifm();
 
+// Interface video
+video_if video_ifm();
+
 // Instance du module Top
-Top Top0(.*) ;
+Top #(.HDISP(160), .VDISP(90)) Top0(.*) ;
 
 ///////////////////////////////
 //  Code élèves
 //////////////////////////////
+
+screen #(.mode(13),.X(160),.Y(90)) screen0(.video_ifs(video_ifm))  ;
 
 // Horloge 50MHz
 always #10ns FPGA_CLK1_50 = ~FPGA_CLK1_50;

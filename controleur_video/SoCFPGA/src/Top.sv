@@ -1,13 +1,17 @@
 `default_nettype none
 
-module Top (
+module Top #(
+    parameter HDISP = 800,
+    parameter VDISP = 400
+) (
     // Les signaux externes de la partie FPGA
 	input  wire         FPGA_CLK1_50,
 	input  wire  [1:0]	KEY,
 	output logic [7:0]	LED,
 	input  wire	 [3:0]	SW,
     // Les signaux du support matériel son regroupés dans une interface
-    hws_if.master       hws_ifm
+    hws_if.master       hws_ifm,
+    video_if.master       video_ifm
 );
 
 //====================================
@@ -83,6 +87,10 @@ assign wshb_if_sdram.bte = '0 ;
 	localparam led2cmpt = 16000000;
 `endif
 
+
+vga #(.HDISP(HDISP), .VDISP(VDISP)) vga_inst (.pixel_clk(pixel_clk), .pixel_rst(pixel_rst), .video_ifm(video_ifm));
+
+
 assign LED[0] = KEY[0];
 assign LED[7:3] = 5'b0;
 
@@ -142,5 +150,6 @@ always_ff @(posedge pixel_clk) begin
         LED[2] <= ~LED[2];
     end
 end
+
 
 endmodule
