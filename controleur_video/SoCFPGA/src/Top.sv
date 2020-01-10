@@ -2,7 +2,7 @@
 
 module Top #(
     parameter HDISP = 800,
-    parameter VDISP = 400
+    parameter VDISP = 480
 ) (
     // Les signaux externes de la partie FPGA
 	input  wire         FPGA_CLK1_50,
@@ -87,8 +87,12 @@ assign wshb_if_sdram.bte = '0 ;
 	localparam led2cmpt = 16000000;
 `endif
 
-
-vga #(.HDISP(HDISP), .VDISP(VDISP)) vga_inst (.pixel_clk(pixel_clk), .pixel_rst(pixel_rst), .video_ifm(video_ifm));
+vga #(.HDISP(HDISP), .VDISP(VDISP))
+      vga_inst (
+          .pixel_clk(pixel_clk),
+          .pixel_rst(pixel_rst),
+          .video_ifm(video_ifm)
+          );
 
 
 assign LED[0] = KEY[0];
@@ -98,18 +102,18 @@ assign LED[7:3] = 5'b0;
 // Declaration du schéma de reset
 //=============================
 
-logic pixel_rst_int; // Intermédiaire valeur du signal pixel_rst
+// Intermédiaire valeur du signal pixel_rst
+logic pixel_rst_int;
 
-always_ff @(posedge pixel_clk or posedge sys_rst) begin
-		if(sys_rst) begin
-				pixel_rst <= 1;
-				pixel_rst_int <= 1;
-		end
-		else begin
-				pixel_rst_int <= 0;
-				pixel_rst <= pixel_rst_int;
-		end
-end
+always_ff @(posedge pixel_clk or posedge sys_rst)
+    if(sys_rst) begin
+        pixel_rst <= 1;
+        pixel_rst_int <= 1;
+    end
+    else begin
+        pixel_rst_int <= 0;
+        pixel_rst <= pixel_rst_int;
+    end
 
 //===================================
 //  LED clignote - sys_clk
@@ -117,13 +121,14 @@ end
 
 localparam cnt1_size = $clog2(led1cmpt)-1;
 logic [cnt1_size:0] led1_cnt;
-always_ff @(posedge sys_clk) begin
-    led1_cnt <= led1_cnt + 1'b1;
-
+always_ff @(posedge sys_clk or posedge sys_rst)
     if(sys_rst) begin
         led1_cnt <= 1;
         LED[1] <= 0;
     end
+    else
+    begin
+    led1_cnt <= led1_cnt + 1'b1;
 
     if(led1_cnt == led1cmpt) begin
         led1_cnt <= 1;
@@ -137,13 +142,14 @@ end
 
 localparam cnt2_size = $clog2(led2cmpt)-1;
 logic [cnt2_size:0] led2_cnt;
-always_ff @(posedge pixel_clk) begin
-    led2_cnt <= led2_cnt + 1'b1;
-
+always_ff @(posedge pixel_clk or posedge pixel_rst)
     if(pixel_rst) begin
         led2_cnt <= 1;
         LED[2] <= 0;
     end
+    else
+    begin
+    led2_cnt <= led2_cnt + 1'b1;
 
     if(led2_cnt == led2cmpt) begin
         led2_cnt <= 1;
