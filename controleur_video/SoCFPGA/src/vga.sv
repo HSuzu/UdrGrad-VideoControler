@@ -4,7 +4,8 @@ module vga #(
 ) (
     input wire      pixel_clk,
     input wire      pixel_rst,
-    video_if.master video_ifm
+    video_if.master video_ifm,
+    wshb_if.master  wshb_ifm
 );
 
 localparam HFP      = 40; // Horizontal Front Porch
@@ -32,6 +33,16 @@ logic [ybits-1:0] py; // Compteur de lignes
 
 logic [uxbits-1:0] x; // Coordonnée x du pixel actif
 logic [uybits-1:0] y; // Coordonnée y du pixel actif
+
+// Wishbone
+assign wshb_ifm.dat_ms = 32'hBABECAFE;
+assign wshb_ifm.adr    = '0;
+assign wshb_ifm.cyc    = 1'b1;
+assign wshb_ifm.sel    = 4'b1111;
+assign wshb_ifm.stb    = 1'b1;
+assign wshb_ifm.we     = 1'b1;
+assign wshb_ifm.cti    = '0;
+assign wshb_ifm.bte    = '0;
 
 // Incrementeur des competeurs
 always_ff @(posedge pixel_clk or posedge pixel_rst) 
