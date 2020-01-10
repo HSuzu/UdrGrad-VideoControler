@@ -16,8 +16,8 @@ localparam VBP      = 29; // Vertical Back Porch
 
 localparam xmargin = HFP + HPULSE + HBP;
 localparam ymargin = VFP + VPULSE + VBP;
-localparam xlen = HDISP + xmargin;
-localparam ylen = VDISP + ymargin;
+localparam xlen    = HDISP + xmargin - 1;
+localparam ylen    = VDISP + ymargin - 1;
 
 localparam xbits = $clog2(xlen)-1; // Nombre de bits du compteur px
 localparam ybits = $clog2(ylen)-1; // Nombre de bits du compteur py
@@ -30,44 +30,52 @@ assign video_ifm.CLK = pixel_clk;
 bit [xbits:0] px; // Compteur de pixels
 bit [ybits:0] py; // Compteur de lignes
 
-bit [uybits:0] x; // Coordonnée x du pixel actif
+bit [uxbits:0] x; // Coordonnée x du pixel actif
 bit [uybits:0] y; // Coordonnée y du pixel actif
 
-assign x = px > (HFP + HPULSE + HBP) ? px - (HFP + HPULSE + HBP):'0;
-assign y = py > (VFP + VPULSE + VBP) ? py - (VFP + VPULSE + VBP):'0;
+// assign x = px > xmargin ? px - xmargin:'0;
+// assign y = py > ymargin ? py - ymargin:'0;
 
 // Incrementeur des competeurs
 always_ff @(posedge pixel_clk or posedge pixel_rst) 
  if(pixel_rst) begin
-    px <= 1;
-    py <= 1;
+    px <= '0;
+    py <= '0;
  end
  else 
  begin
     px <= px + 1'b1;
-    if(px == xlen) begin
-        px <= 1;
+    if(px >= xlen) begin
+        px <= '0;
         py <= py + 1'b1;
-        if(py == ylen) py <= 1;
+        if(py >= ylen) py <= '0;
     end
 end
 
-// Controleur des signals HS et VS
+// Controleur des signals HS, VS et BLANK
 always_ff @(posedge pixel_clk) begin
-    video_ifm.HS <= !(px > HFP && px <= HFP + HPULSE) ;
-    video_ifm.VS <= !(py > VFP && py <= VFP + VPULSE) ;
+    video_ifm.HS <= !(px >= HFP && px < HFP + HPULSE) ;
+    video_ifm.VS <= !(py >= VFP && py < VFP + VPULSE) ;
 end
 
 // Controleur du signal BLANK
 always_ff @(posedge pixel_clk) begin
-    video_ifm.BLANK <= ! (px <= xmargin || py <= ymargin) ;
+    video_ifm.BLANK <= !(px < xmargin || py < ymargin) ;
 end
 
+// Controleur du compteur de position du pixel actif
 always_ff @(posedge pixel_clk) begin
-    video_ifm.RGB <= {8'b0,8'b0,8'b0};
+   x <= px > xmargin ? px - xmargin:'0;
+   y <= py > ymargin ? py - ymargin:'0;
+end
 
-    if(video_ifm.BLANK && (x[3:0] == 3'd0 || y[3:0] == 3'd0))
+// Generateur d'image
+always_comb begin
+    if((x[3:0] == 3'd0 || y[3:0] == 3'd0))
         video_ifm.RGB <= {8'hff,8'hff,8'hff};
+    else
+        video_ifm.RGB <= {8'b0,8'b0,8'b0};
+
 end
 
 endmodule
