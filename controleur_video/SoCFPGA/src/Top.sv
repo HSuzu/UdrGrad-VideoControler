@@ -5,10 +5,10 @@ module Top #(
     parameter VDISP = 480
 ) (
     // Les signaux externes de la partie FPGA
-	input  wire         FPGA_CLK1_50,
-	input  wire  [1:0]	KEY,
-	output logic [7:0]	LED,
-	input  wire	 [3:0]	SW,
+    input  wire         FPGA_CLK1_50,
+    input  wire  [1:0]	KEY,
+    output logic [7:0]	LED,
+    input  wire	 [3:0]	SW,
     // Les signaux du support matériel son regroupés dans une interface
     hws_if.master       hws_ifm,
     video_if.master       video_ifm
@@ -56,10 +56,10 @@ hw_support hw_support_inst (
 // du flux video pour l'instant
 // A SUPPRIMER PLUS TARD
 //=============================
-// assign wshb_if_stream.ack = 1'b1;
-// assign wshb_if_stream.dat_sm = '0 ;
-// assign wshb_if_stream.err =  1'b0 ;
-// assign wshb_if_stream.rty =  1'b0 ;
+assign wshb_if_stream.ack = 1'b1;
+assign wshb_if_stream.dat_sm = '0 ;
+assign wshb_if_stream.err =  1'b0 ;
+assign wshb_if_stream.rty =  1'b0 ;
 
 //=============================
 // On neutralise l'interface SDRAM

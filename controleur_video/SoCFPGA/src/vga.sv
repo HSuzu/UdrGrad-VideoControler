@@ -35,22 +35,22 @@ logic [uxbits-1:0] x; // Coordonnée x du pixel actif
 logic [uybits-1:0] y; // Coordonnée y du pixel actif
 
 // Wishbone
-assign wshb_ifm.dat_ms = 32'hBABECAFE;
-assign wshb_ifm.adr    = '0;
-assign wshb_ifm.cyc    = 1'b1;
-assign wshb_ifm.sel    = 4'b1111;
-assign wshb_ifm.stb    = 1'b1;
-assign wshb_ifm.we     = 1'b1;
-assign wshb_ifm.cti    = '0;
-assign wshb_ifm.bte    = '0;
+assign wshb_ifm.dat_ms = 32'hBABECAFE; // Donnée 32 bits émises
+assign wshb_ifm.adr    = '0;           // Adresse d'écriture
+assign wshb_ifm.cyc    = 1'b1;         // Le bus est sélectionné
+assign wshb_ifm.sel    = 4'b1111;      // Les 4 octets sont à écrire
+assign wshb_ifm.stb    = 1'b1;         // Nous demandons une transaction
+assign wshb_ifm.we     = 1'b1;         // Transaction en écriture
+assign wshb_ifm.cti    = '0;           // Transfert classique
+assign wshb_ifm.bte    = '0;           // sans utilité.
 
 // Incrementeur des competeurs
-always_ff @(posedge pixel_clk or posedge pixel_rst) 
+always_ff @(posedge pixel_clk or posedge pixel_rst)
  if(pixel_rst) begin
     px <= '0;
     py <= '0;
  end
- else 
+ else
  begin
     px <= px + 1'b1;
     if(px >= XLEN-1) begin
