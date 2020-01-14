@@ -31,20 +31,88 @@ assign video_ifm.CLK = pixel_clk;
 logic [xbits-1:0] px; // Compteur de pixels
 logic [ybits-1:0] py; // Compteur de lignes
 
-logic [uxbits-1:0] x; // Coordonnée x du pixel actif
-logic [uybits-1:0] y; // Coordonnée y du pixel actif
-
 // Wishbone
 assign wshb_ifm.dat_ms = 32'hBABECAFE; // Donnée 32 bits émises
-assign wshb_ifm.adr    = '0;           // Adresse d'écriture
+//assign wshb_ifm.adr    = '0;           // Adresse d'écriture
 assign wshb_ifm.cyc    = 1'b1;         // Le bus est sélectionné
-assign wshb_ifm.sel    = 4'b1111;      // Les 4 octets sont à écrire
-assign wshb_ifm.stb    = 1'b1;         // Nous demandons une transaction
-assign wshb_ifm.we     = 1'b1;         // Transaction en écriture
+assign wshb_ifm.sel    = 4'b0111;      // Les 4 octets sont à écrire
+// assign wshb_ifm.stb    = 1'b1;         // Nous demandons une transaction
+assign wshb_ifm.we     = 1'b0;         // Transaction en lecture
 assign wshb_ifm.cti    = '0;           // Transfert classique
 assign wshb_ifm.bte    = '0;           // sans utilité.
 
-// Incrementeur des competeurs
+//localparam rgb_data = wshb_ifm.dat_sm[23:0];
+
+always_ff @(posedge wshb_ifm.clk or posedge wshb_ifm.rst)
+if(wshb_ifm.rst)
+begin
+    wshb_ifm.adr <= '0;
+end
+else
+begin
+    if(wshb_ifm.ack)
+    begin
+        if(wshb_ifm.adr == 4*(HDISP*VDISP-1))
+            wshb_ifm.adr <= '0;
+        else
+            wshb_ifm.adr <= wshb_ifm.adr + 4;
+    end
+end
+
+// Async FIFO
+logic        fifo_read;
+logic [31:0] fifo_rdata;
+logic        fifo_rempty;
+logic [31:0] fifo_wdata;
+logic        fifo_write;
+logic        fifo_wfull;
+logic        fifo_walmost_full;
+
+async_fifo #(
+    .DATA_WIDTH(32),
+    .DEPTH_WIDTH(8),
+    .ALMOST_FULL_THRESHOLD(254)
+    ) fifo (
+        .rst(wshb_ifm.rst),
+        .rclk(pixel_clk),
+        .read(fifo_read),
+        .rdata(fifo_rdata),
+        .rempty(fifo_rempty),
+        .wclk(wshb_ifm.clk),
+        .wdata(fifo_wdata),
+        .write(fifo_write),
+        .wfull(fifo_wfull),
+        .walmost_full(fifo_walmost_full)
+    );
+
+assign fifo_wdata = wshb_ifm.dat_sm;
+assign fifo_write = wshb_ifm.ack;
+
+always_ff @(posedge wshb_ifm.clk or posedge wshb_ifm.rst)
+if(wshb_ifm.rst)
+    wshb_ifm.stb <= 1'b1;
+else
+if(wshb_ifm.ack || !wshb_ifm.stb)
+    wshb_ifm.stb <= !fifo_walmost_full;
+
+logic vga_wfull_int, vga_wfull;
+always_ff @(posedge pixel_clk or posedge pixel_rst)
+if(pixel_rst)
+begin
+    vga_wfull_int <= 1'b0;
+    vga_wfull <= 1'b0;
+end
+else
+begin
+    vga_wfull_int <= fifo_wfull;
+    if(px >= HDISP && py >= VDISP)
+        vga_wfull <= vga_wfull_int;
+end
+
+assign video_ifm.RGB = fifo_rdata[23:0];
+assign fifo_read = !fifo_rempty && vga_wfull && video_ifm.BLANK;
+
+// Incrementeur des compteurs
 always_ff @(posedge pixel_clk or posedge pixel_rst)
  if(pixel_rst) begin
     px <= '0;
@@ -69,20 +137,6 @@ end
 // Controleur du signal BLANK
 always_ff @(posedge pixel_clk) begin
     video_ifm.BLANK <= (px < HDISP && py < VDISP) ;
-end
-
-// Controleur du compteur de position du pixel actif
-always_comb begin
-   x <= px < HDISP ? px :'0;
-   y <= py < VDISP ? py :'0;
-end
-
-// Generateur d'image
-always_comb begin
-    if(x[3:0] == 3'd0 || y[3:0] == 3'd0)
-        video_ifm.RGB <= {8'hff,8'hff,8'hff};
-    else
-        video_ifm.RGB <= {8'h0,8'h0,8'h0};
 end
 
 endmodule
