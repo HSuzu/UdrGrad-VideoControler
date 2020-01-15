@@ -34,7 +34,7 @@ logic [ybits-1:0] py; // Compteur de lignes
 // Wishbone
 // assign wshb_ifm.dat_ms = 32'hBABECAFE; // Donnée 32 bits émises
 //assign wshb_ifm.adr    = '0;           // Adresse d'écriture
-assign wshb_ifm.cyc    = 1'b1;         // Le bus est sélectionné
+//assign wshb_ifm.cyc    = 1'b1;         // Le bus est sélectionné
 assign wshb_ifm.sel    = 4'b0111;      // Les 4 octets sont à écrire
 // assign wshb_ifm.stb    = 1'b1;         // Nous demandons une transaction
 assign wshb_ifm.we     = 1'b0;         // Transaction en lecture
@@ -80,8 +80,8 @@ async_fifo #(
 
 assign fifo_wdata = wshb_ifm.dat_sm;
 assign fifo_write = wshb_ifm.ack;
-
 assign wshb_ifm.stb = !fifo_wfull;
+assign wshb_ifm.cyc = !fifo_wfull;
 
 logic vga_wfull_int, vga_wfull;
 always_ff @(posedge pixel_clk or posedge pixel_rst)
