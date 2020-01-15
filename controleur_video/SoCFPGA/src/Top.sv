@@ -37,7 +37,7 @@ sys_pll  sys_pll_inst(
 //  Les bus Wishbone internes
 //=============================
 wshb_if #( .DATA_BYTES(4)) wshb_if_sdram  (sys_clk, sys_rst);
-wshb_if #( .DATA_BYTES(4)) wshb_if_mire   (sys_clk, sys_rst);
+// wshb_if #( .DATA_BYTES(4)) wshb_if_mire   (sys_clk, sys_rst);
 wshb_if #( .DATA_BYTES(4)) wshb_if_vga    (sys_clk, sys_rst);
 wshb_if #( .DATA_BYTES(4)) wshb_if_stream (sys_clk, sys_rst);
 
@@ -58,10 +58,10 @@ hw_support hw_support_inst (
 // du flux video pour l'instant
 // A SUPPRIMER PLUS TARD
 //=============================
-assign wshb_if_stream.ack = 1'b1;
-assign wshb_if_stream.dat_sm = '0 ;
-assign wshb_if_stream.err =  1'b0 ;
-assign wshb_if_stream.rty =  1'b0 ;
+// assign wshb_if_stream.ack = 1'b1;
+// assign wshb_if_stream.dat_sm = '0 ;
+// assign wshb_if_stream.err =  1'b0 ;
+// assign wshb_if_stream.rty =  1'b0 ;
 
 //=============================
 // On neutralise l'interface SDRAM
@@ -89,9 +89,9 @@ vga #(.HDISP(HDISP), .VDISP(VDISP))
           .wshb_ifm(wshb_if_vga)
           );
 
-mire #(.HDISP(HDISP), .VDISP(VDISP)) mire_inst (wshb_if_mire);
+// mire #(.HDISP(HDISP), .VDISP(VDISP)) mire_inst (wshb_if_mire);
 
-wshb_intercon intercon_inst (wshb_if_mire, wshb_if_vga, wshb_if_sdram);
+wshb_intercon intercon_inst (wshb_if_stream, wshb_if_vga, wshb_if_sdram);
 
 
 `ifdef SIMULATION

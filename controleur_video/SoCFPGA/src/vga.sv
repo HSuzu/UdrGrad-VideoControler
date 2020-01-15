@@ -64,7 +64,7 @@ logic        fifo_walmost_full;
 async_fifo #(
     .DATA_WIDTH(32),
     .DEPTH_WIDTH(8),
-    .ALMOST_FULL_THRESHOLD(2**8-1)
+    .ALMOST_FULL_THRESHOLD(224)
     ) fifo (
         .rst(wshb_ifm.rst),
         .rclk(pixel_clk),
@@ -80,8 +80,19 @@ async_fifo #(
 
 assign fifo_wdata = wshb_ifm.dat_sm;
 assign fifo_write = wshb_ifm.ack;
-assign wshb_ifm.stb = !fifo_wfull;
-assign wshb_ifm.cyc = !fifo_wfull;
+assign wshb_ifm.stb = wshb_ifm.cyc;
+
+logic cyc_en;
+assign wshb_ifm.cyc = cyc_en & !fifo_wfull;
+
+always_ff @(posedge pixel_clk or posedge pixel_rst)
+if(pixel_rst)
+    cyc_en <= 1'b0;
+else
+begin
+    if(fifo_wfull) cyc_en <= 1'b0;
+    if(!fifo_walmost_full) cyc_en <= 1'b1;
+end
 
 logic vga_wfull_int, vga_wfull;
 always_ff @(posedge pixel_clk or posedge pixel_rst)
