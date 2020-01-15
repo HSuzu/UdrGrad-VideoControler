@@ -32,7 +32,7 @@ logic [xbits-1:0] px; // Compteur de pixels
 logic [ybits-1:0] py; // Compteur de lignes
 
 // Wishbone
-assign wshb_ifm.dat_ms = 32'hBABECAFE; // Donnée 32 bits émises
+// assign wshb_ifm.dat_ms = 32'hBABECAFE; // Donnée 32 bits émises
 //assign wshb_ifm.adr    = '0;           // Adresse d'écriture
 assign wshb_ifm.cyc    = 1'b1;         // Le bus est sélectionné
 assign wshb_ifm.sel    = 4'b0111;      // Les 4 octets sont à écrire
@@ -41,23 +41,16 @@ assign wshb_ifm.we     = 1'b0;         // Transaction en lecture
 assign wshb_ifm.cti    = '0;           // Transfert classique
 assign wshb_ifm.bte    = '0;           // sans utilité.
 
-//localparam rgb_data = wshb_ifm.dat_sm[23:0];
 
 always_ff @(posedge wshb_ifm.clk or posedge wshb_ifm.rst)
 if(wshb_ifm.rst)
-begin
     wshb_ifm.adr <= '0;
-end
 else
-begin
     if(wshb_ifm.ack)
-    begin
         if(wshb_ifm.adr == 4*(HDISP*VDISP-1))
             wshb_ifm.adr <= '0;
         else
             wshb_ifm.adr <= wshb_ifm.adr + 4;
-    end
-end
 
 // Async FIFO
 logic        fifo_read;
@@ -71,7 +64,7 @@ logic        fifo_walmost_full;
 async_fifo #(
     .DATA_WIDTH(32),
     .DEPTH_WIDTH(8),
-    .ALMOST_FULL_THRESHOLD(254)
+    .ALMOST_FULL_THRESHOLD(2**8-1)
     ) fifo (
         .rst(wshb_ifm.rst),
         .rclk(pixel_clk),
@@ -88,12 +81,7 @@ async_fifo #(
 assign fifo_wdata = wshb_ifm.dat_sm;
 assign fifo_write = wshb_ifm.ack;
 
-always_ff @(posedge wshb_ifm.clk or posedge wshb_ifm.rst)
-if(wshb_ifm.rst)
-    wshb_ifm.stb <= 1'b1;
-else
-if(wshb_ifm.ack || !wshb_ifm.stb)
-    wshb_ifm.stb <= !fifo_walmost_full;
+assign wshb_ifm.stb = !fifo_wfull;
 
 logic vga_wfull_int, vga_wfull;
 always_ff @(posedge pixel_clk or posedge pixel_rst)
@@ -109,7 +97,7 @@ begin
         vga_wfull <= vga_wfull_int;
 end
 
-assign video_ifm.RGB = fifo_rdata[23:0];
+assign video_ifm.RGB = {fifo_rdata[7:0], fifo_rdata[15:8], fifo_rdata[23:16]};
 assign fifo_read = !fifo_rempty && vga_wfull && video_ifm.BLANK;
 
 // Incrementeur des compteurs
@@ -120,12 +108,13 @@ always_ff @(posedge pixel_clk or posedge pixel_rst)
  end
  else
  begin
-    px <= px + 1'b1;
     if(px >= XLEN-1) begin
         px <= '0;
         py <= py + 1'b1;
         if(py >= YLEN-1) py <= '0;
     end
+    else
+        px <= px + 1'b1;
 end
 
 // Controleur des signals HS, VS et BLANK

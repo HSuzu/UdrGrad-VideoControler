@@ -35,7 +35,7 @@ initial begin
 end
 
 always begin
-    #5ms;
+    #40ms;
     $stop();
 end
 
