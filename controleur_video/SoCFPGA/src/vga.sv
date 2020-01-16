@@ -32,7 +32,7 @@ logic [xbits-1:0] px; // Compteur de pixels
 logic [ybits-1:0] py; // Compteur de lignes
 
 // Wishbone
-// assign wshb_ifm.dat_ms = 32'hBABECAFE; // Donnée 32 bits émises
+assign wshb_ifm.dat_ms = 32'0; // Donnée 32 bits émises
 //assign wshb_ifm.adr    = '0;           // Adresse d'écriture
 //assign wshb_ifm.cyc    = 1'b1;         // Le bus est sélectionné
 assign wshb_ifm.sel    = 4'b0111;      // Les 4 octets sont à écrire
@@ -63,8 +63,8 @@ logic        fifo_walmost_full;
 
 async_fifo #(
     .DATA_WIDTH(32),
-    .DEPTH_WIDTH(9),
-    .ALMOST_FULL_THRESHOLD(256)
+    .DEPTH_WIDTH(8),
+    .ALMOST_FULL_THRESHOLD(2**8-32)
     ) fifo (
         .rst(wshb_ifm.rst),
         .rclk(pixel_clk),
