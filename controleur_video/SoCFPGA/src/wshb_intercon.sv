@@ -1,4 +1,4 @@
-module wshb_intercon(
+module wshb_intercon (
     wshb_if.slave  wshb_ifs_mire,
     wshb_if.slave  wshb_ifs_vga,
     wshb_if.master  wshb_ifm
@@ -18,15 +18,15 @@ assign wshb_ifm.cti    = (jeton) ? wshb_ifs_vga.cti    : wshb_ifs_mire.cti    ;
 assign wshb_ifm.bte    = (jeton) ? wshb_ifs_vga.bte    : wshb_ifs_mire.bte    ;
 
 
-assign wshb_ifs_vga.ack    = (jeton) ? wshb_ifm.ack    : 0 ;
+assign wshb_ifs_vga.ack    = (jeton) ? wshb_ifm.ack    : 1'b0 ;
 assign wshb_ifs_vga.dat_sm = (jeton) ? wshb_ifm.dat_sm :'0 ;
-assign wshb_ifs_vga.err    = (jeton) ? wshb_ifm.err    : 0 ;
-assign wshb_ifs_vga.rty    = (jeton) ? wshb_ifm.rty    : 0 ;
+assign wshb_ifs_vga.err    = (jeton) ? wshb_ifm.err    : 1'b0 ;
+assign wshb_ifs_vga.rty    = (jeton) ? wshb_ifm.rty    : 1'b0 ;
 
-assign wshb_ifs_mire.ack    = (!jeton) ? wshb_ifm.ack    : 0 ;
+assign wshb_ifs_mire.ack    = (!jeton) ? wshb_ifm.ack    : 1'b0 ;
 assign wshb_ifs_mire.dat_sm = (!jeton) ? wshb_ifm.dat_sm :'0 ;
-assign wshb_ifs_mire.err    = (!jeton) ? wshb_ifm.err    : 0 ;
-assign wshb_ifs_mire.rty    = (!jeton) ? wshb_ifm.rty    : 0 ;
+assign wshb_ifs_mire.err    = (!jeton) ? wshb_ifm.err    : 1'b0 ;
+assign wshb_ifs_mire.rty    = (!jeton) ? wshb_ifm.rty    : 1'b0 ;
 
 
 always_ff @(posedge wshb_ifm.clk or posedge wshb_ifm.rst)

@@ -63,8 +63,8 @@ logic        fifo_walmost_full;
 
 async_fifo #(
     .DATA_WIDTH(32),
-    .DEPTH_WIDTH(8),
-    .ALMOST_FULL_THRESHOLD(224)
+    .DEPTH_WIDTH(9),
+    .ALMOST_FULL_THRESHOLD(256)
     ) fifo (
         .rst(wshb_ifm.rst),
         .rclk(pixel_clk),
@@ -82,17 +82,18 @@ assign fifo_wdata = wshb_ifm.dat_sm;
 assign fifo_write = wshb_ifm.ack;
 assign wshb_ifm.stb = wshb_ifm.cyc;
 
-logic cyc_en;
-assign wshb_ifm.cyc = cyc_en & !fifo_wfull;
+// logic cyc_en;
+// assign wshb_ifm.cyc = cyc_en & !fifo_wfull;
+assign wshb_ifm.cyc = !fifo_wfull;
 
-always_ff @(posedge pixel_clk or posedge pixel_rst)
-if(pixel_rst)
-    cyc_en <= 1'b0;
-else
-begin
-    if(fifo_wfull) cyc_en <= 1'b0;
-    if(!fifo_walmost_full) cyc_en <= 1'b1;
-end
+// always_ff @(posedge wshb_ifm.clk or posedge wshb_ifm.rst)
+// if(wshb_ifm.rst)
+//     cyc_en <= 1'b1;
+// else
+// begin
+//     if(!fifo_walmost_full) cyc_en <= 1'b1;
+//     if(fifo_wfull) cyc_en <= 1'b0;
+// end
 
 logic vga_wfull_int, vga_wfull;
 always_ff @(posedge pixel_clk or posedge pixel_rst)
@@ -108,7 +109,8 @@ begin
         vga_wfull <= vga_wfull_int;
 end
 
-assign video_ifm.RGB = {fifo_rdata[7:0], fifo_rdata[15:8], fifo_rdata[23:16]};
+//assign video_ifm.RGB = {fifo_rdata[7:0], fifo_rdata[15:8], fifo_rdata[23:16]};
+assign video_ifm.RGB = fifo_rdata[23:0];
 assign fifo_read = !fifo_rempty && vga_wfull && video_ifm.BLANK;
 
 // Incrementeur des compteurs
